@@ -9,6 +9,7 @@ class BCP:
         self.cpu_use = 0
         self.wait_time = 0
         self.duration = 0
+        self.duration_prevision = []
         self.io_events = []
         self.quantum = 0
         self.time_block = 0;
