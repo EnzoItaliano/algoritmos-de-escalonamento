@@ -11,6 +11,7 @@ class BCP:
         self.duration = 0
         self.io_events = []
         self.quantum = 0
+        self.time_block = 0;
 
 def BCPs(fp):
     process = []
@@ -18,12 +19,14 @@ def BCPs(fp):
     for linha in fp:
         values = linha.split()
         process.append(BCP())
-        process[i].pid = values[0]
-        process[i].duration = values[1]
-        process[i].priority = values[2]
-        process[i].incoming = values[3]
+        process[i].pid = int(values[0])
+        process[i].duration = int(values[1])
+        process[i].priority = int(values[2])
+        process[i].incoming = int(values[3])
         if len(values) > 4:
-            process[i].io_events.append(values[4:])
+            values[4:]
+            for j in range(4,len(values)):
+                process[i].io_events.append(int(values[j]))
         i+=1
     return process
 
