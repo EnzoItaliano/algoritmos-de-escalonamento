@@ -1,19 +1,19 @@
-class BCP:
+class BCP:                          # classe BCP, utilizado como se fosse uma struct
     def __init__(self):
-        self.pid = 0
-        self.priority = 0
-        self.state = "waiting"
-        self.incoming = 0
-        self.starts = []
-        self.ends = []
-        self.cpu_use = 0
-        self.wait_time = 0
-        self.duration = 0
-        self.io_events = []
-        self.quantum = 0
-        self.time_block = 0;
+        self.pid = 0                # PID do processo
+        self.priority = 0           # prioridade do processo
+        self.state = "waiting"      # estado atual do processo: em espera, bloqueado, pronto, finalizado
+        self.incoming = 0           # tempo de chegada do processo
+        self.starts = []            # momentos em que o processo entra no processador
+        self.ends = []              # momentos em que o processo sai do processador
+        self.cpu_use = 0            # tempos de uso da cpu do processo
+        self.wait_time = 0          # tempos de espera do processo
+        self.duration = 0           # duração total do processo
+        self.io_events = []         # chegada de momentos de E/S
+        self.quantum = 0            # unidade de tempo dentro do processador
+        self.time_block = 0;        # tempo bloqueado
 
-def BCPs(fp):
+def BCPs(fp):                       # coloca os dados do txt de entrada em objetos 
     process = []
     i=0
     for linha in fp:
