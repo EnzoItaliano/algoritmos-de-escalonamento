@@ -90,6 +90,6 @@ def Run(processes):                             # função principal
                 runOneTick(running_process)                     # roda ele uma vez
         # time.sleep(0.5)
 
-    # for i in processes_list:
-    #     for j in range(len(i.starts)):
-    #         print("Processo " + str(i.pid) + " Começa " + str(i.starts[j]) + " Termina " + str(i.ends[j]))
+    for i in processes_list:
+        for j in range(len(i.starts)):
+            print("Processo " + str(i.pid) + " Começa " + str(i.starts[j]) + " Termina " + str(i.ends[j]))

@@ -1,12 +1,9 @@
 import config
-import sys
-import processes
 import time
 from random import randint
 
-p = processes.BCPs(open(sys.argv[1]))   # lista que receberá todos o BCP dos processos     
-
-number_of_process = len(p)              # numero de processos total (passados no arquivo txt)
+processes_list = []     # lista que receberá todos o BCP dos processos 
+number_of_process = 0   # numero de processos total (passados no arquivo txt)
 
 QUANTUM_MIN = config.tempo_min_io       # tempo mínimo de bloqueio para I/O (passados no arquivo txt)
 QUANTUM_MAX = config.tempo_max_io       # tempo mínimo de bloqueio para I/O (passados no arquivo txt)
@@ -20,8 +17,8 @@ processes_finished_queue = []           # lista de processos finalizados
 
 
 def startPrevision():
-    for i in range(len(p)):
-        p[i].duration_prevision.append(p[i].duration)       # começa todas as previsões com o tempo de duração total do processo (como descrito no arquivo do trabalho)
+    for i in range(len(processes_list)):
+        processes_list[i].duration_prevision.append(processes_list[i].duration)       # começa todas as previsões com o tempo de duração total do processo (como descrito no arquivo do trabalho)
 
 
 def runOneTick(running):                # função que executa uma unidade de tempo
@@ -72,12 +69,12 @@ def runOneTick(running):                # função que executa uma unidade de te
 def check(tick):
     
     if number_of_process != 0:                          # se ainda houver processos para trabalhar continua
-        for i in range(len(p)):
+        for i in range(len(processes_list)):
 
-            if tick == p[i].incoming:                   # entra quando houver um processo para chegar a fila de prontos 
+            if tick == processes_list[i].incoming:                   # entra quando houver um processo para chegar a fila de prontos 
                 # p[i].duration_prevision.append(p[i].duration)
-                processes_ready_queue.append(p[i])      # adiciona o processo que chegou a fila de prontos
-
+                processes_ready_queue.append(processes_list[i])      # adiciona o processo que chegou a fila de prontos
+                print(len(processes_ready_queue))
                 processes_ready_queue.sort(key=lambda x: x.duration_prevision[len(x.duration_prevision) - 1], reverse=False)     # organiza a fila de acordo com o menor tempo da previsão
                 # for i in processes_ready_queue:
                 #     for j in processes_ready_queue:
@@ -105,17 +102,24 @@ def check(tick):
         return False
 
 
-startPrevision()
 end_condition = 0
-while not end_condition:
-    tick += 1
-    if check(tick):
-        if len(processes_ready_queue) > 0:
-            running_process = processes_ready_queue[0]      # pega o primeiro processo da fila de prontos
-            running_process.state = "running"               # muda o seu estado para executando
-            runOneTick(running_process)                     # roda a rotina de execução do processo
-    # time.sleep(0.5)
+def Run(processes):
+    startPrevision()
+    global processes_list
+    global number_of_process
+    processes_list = processes.copy()           # faz uma cópia da lista de processos passada por argumento
+    number_of_process = len(processes_list)     # coloca o numero de processos total na variavel
+    print("oi")
+    while not end_condition:
+        global tick
+        tick += 1
+        if check(tick):
+            if len(processes_ready_queue) > 0:
+                running_process = processes_ready_queue[0]      # pega o primeiro processo da fila de prontos
+                running_process.state = "running"               # muda o seu estado para executando
+                runOneTick(running_process)                     # roda a rotina de execução do processo
+        # time.sleep(0.5)
 
-for i in p:
-    for j in range(len(i.starts)):
-        print("Processo " + str(i.pid) + " Prioridade " + str(i.priority) + " Começa " + str(i.starts[j]) + " Termina " + str(i.ends[j]) + " Tempo de IO " + str(i.time_block))
+    for i in processes_list:
+        for j in range(len(i.starts)):
+            print("Processo " + str(i.pid) + " Prioridade " + str(i.priority) + " Começa " + str(i.starts[j]) + " Termina " + str(i.ends[j]) + " Tempo de IO " + str(i.time_block))
