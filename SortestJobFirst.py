@@ -4,106 +4,118 @@ import processes
 import time
 from random import randint
 
-p = processes.BCPs(open(sys.argv[1]))
+p = processes.BCPs(open(sys.argv[1]))   # lista que receberá todos o BCP dos processos     
 
-number_of_process = len(p)
+number_of_process = len(p)              # numero de processos total (passados no arquivo txt)
 
-QUANTUM_MIN = config.tempo_min_io
-QUANTUM_MAX = config.tempo_max_io
-tick = -1
+QUANTUM_MIN = config.tempo_min_io       # tempo mínimo de bloqueio para I/O (passados no arquivo txt)
+QUANTUM_MAX = config.tempo_max_io       # tempo mínimo de bloqueio para I/O (passados no arquivo txt)
+ALPHA = config.alpha
 
-processes_ready_queue = []
-processes_blocked_queue = []
-processes_finished_queue = []
+tick = -1                               # cada vez que um processo é executado uma unidade do quantum no processador o tick é incrementado
 
-p.sort(key=lambda x: x.incoming, reverse=False)
+processes_ready_queue = []              # lista de processos prontos para executar (em espera)
+processes_blocked_queue = []            # lista de processos bloqueados
+processes_finished_queue = []           # lista de processos finalizados
 
 
-def runOneTick(running):
-    running.starts.append(tick)
+def startPrevision():
+    for i in range(len(p)):
+        p[i].duration_prevision.append(p[i].duration)       # começa todas as previsões com o tempo de duração total do processo (como descrito no arquivo do trabalho)
 
-    for x in processes_ready_queue:
+
+def runOneTick(running):                # função que executa uma unidade de tempo
+    running.starts.append(tick)         # marca o momento que o processo começou uma execução
+
+    for x in processes_ready_queue:     # soma mais um no tempo de espera de todos os processos na fila de prontos e que tem o estado "waiting"
         if x.pid != running.pid:
             x.wait_time += 1
-        else:
+        else:                           # o unico processo que não tem o estado "waiting" é o primeiro da fila pois está no processador então incrmenta seu tempo na cpu
             x.cpu_use += 1
 
     
-    running.duration -= 1
+    running.duration -= 1               # decrementa a duração restante do processo
+    running.duration_prevision.append( int( (ALPHA * running.duration) + (ALPHA * running.duration_prevision[len(running.duration_prevision) - 1]) ) )      # faz uma nova previsão de tempo que ira durar o processo
     
 
-    if len(running.io_events) != 0:
-        if running.io_events[0] == running.cpu_use:
-            processes_blocked_queue.append(running)
-            processes_ready_queue.pop(0)
+    if len(running.io_events) != 0:     # caso o processo em execução tenha eventos I/O ele precisa verificar se está no tempo de fazê-lo
+        if running.io_events[0] == running.cpu_use:     # utiliza o seu tempo de cpu para saber se é hora de sair para fazer I/O
+            processes_blocked_queue.append(running)     # adiciona-o na lista de bloqueados
+            processes_ready_queue.pop(0)                # remove ele da fila de prontos
+            
+            running.time_block = randint(QUANTUM_MIN,QUANTUM_MAX)       # é sorteado um tempo de bloqueio para este I/O
 
-            running.ends.append(tick+1)
-            running.io_events.pop(0)
-            running.state = "blocked"
+            running.ends.append(tick+1)                 # marca o tempo de saída do processador
+            running.io_events.pop(0)                    # remove o I/O já executado
+            running.state = "blocked"                   # muda seu status para bloqueado
 
             return
         
-    if running.duration == 0:
-        processes_finished_queue.append(running)
-        processes_ready_queue.pop(0)
-        running.ends.append(tick+1)
-        global number_of_process
-        number_of_process -= 1
-        running.state = "finished"
+    if running.duration == 0:                           # a duração é zero quando ele termina de executar completamente
+        processes_finished_queue.append(running)        # adiciona-o na fila de terminados
+        processes_ready_queue.pop(0)                    # remove-o da fila de prontos
+        running.ends.append(tick+1)                     # marca o tempo de saída do processador
+
+        global number_of_process                        
+        number_of_process -= 1                          # diminui o numero de processos restantes
+
+        running.state = "finished"                      # muda o estado para finalizado
 
         return
 
     else:
 
-        running.ends.append(tick+1)
-        running.state = "waiting"
+        running.ends.append(tick+1)                     # marca o tempo de saída do processador (para o caso dele não voltar)
+        running.state = "waiting"                       # volta o estado para esperado (para o caso dele não voltar)
             
 
 def check(tick):
     
-    if number_of_process != 0:
+    if number_of_process != 0:                          # se ainda houver processos para trabalhar continua
         for i in range(len(p)):
-            if tick == p[i].incoming:
-                p[i].time_block = randint(QUANTUM_MIN,QUANTUM_MAX)
-                processes_ready_queue.append(p[i])
 
-                processes_ready_queue.sort(key=lambda x: x.priority, reverse=False)
-                for i in range(len(processes_ready_queue)):
-                    j = i + 1
-                    for j in range(len(processes_ready_queue)):
-                        if processes_ready_queue[i].duration < processes_ready_queue[j].duration:
-                            processes_ready_queue[i], processes_ready_queue[j] = processes_ready_queue[j], processes_ready_queue[i]
+            if tick == p[i].incoming:                   # entra quando houver um processo para chegar a fila de prontos 
+                # p[i].duration_prevision.append(p[i].duration)
+                processes_ready_queue.append(p[i])      # adiciona o processo que chegou a fila de prontos
 
-            if len(processes_blocked_queue) > 0:
+                processes_ready_queue.sort(key=lambda x: x.duration_prevision[len(x.duration_prevision) - 1], reverse=False)     # organiza a fila de acordo com o menor tempo da previsão
+                # for i in processes_ready_queue:
+                #     for j in processes_ready_queue:
+                #         if i.duration_prevision[len(i.duration_prevision) - 1] > j.duration_prevision[len(i.duration_prevision) - 1] and i.priority == j.priority:
+                #             i, j = j, i
 
-                for j in range(len(processes_blocked_queue)):
-                    if tick - processes_blocked_queue[j].ends[len(processes_blocked_queue[j].ends) - 1] == processes_blocked_queue[j].time_block:
-                        processes_ready_queue.append(processes_blocked_queue[j])
-                        processes_blocked_queue.pop(j)
+            if len(processes_blocked_queue) > 0:        # entra quando houver um processo bloqueado devido a um I/O
 
-                        processes_ready_queue.sort(key=lambda x: x.priority, reverse=False)
-                        for h in range(len(processes_ready_queue)):
-                            k = h + 1
-                            for k in range(len(processes_ready_queue)):
-                                if processes_ready_queue[h].duration < processes_ready_queue[k].duration:
-                                    processes_ready_queue[h], processes_ready_queue[k] = processes_ready_queue[k], processes_ready_queue[h]
+                for n in processes_blocked_queue:
+                    h = 0
+                    if tick - n.ends[len(n.ends) - 1] == n.time_block:      # entra quando estiver no momento de algum processo bloquado sair de I/O
+                        processes_ready_queue.append(n)                     # adiciona-o novamente a fila de prontos
+                        processes_blocked_queue.pop(h)                      # remove-o da fila de bloquados
 
+                        processes_ready_queue.sort(key=lambda x: x.duration_prevision[len(x.duration_prevision) - 1], reverse=False)     # organiza novamente a fila de prontos de acordo com o menor tempo da previsão
+                        # for i in processes_ready_queue:
+                        #     for j in processes_ready_queue:
+                        #         if i.duration_prevision[len(i.duration_prevision) - 1] > j.duration_prevision[len(i.duration_prevision) - 1] and i.priority == j.priority:
+                        #             i, j = j, i
+                    h += 1
         return True
-    else:
+    else:               # finaliza a simulação
         global end_condition
         end_condition = 1
         return False
 
+
+startPrevision()
 end_condition = 0
 while not end_condition:
     tick += 1
     if check(tick):
         if len(processes_ready_queue) > 0:
-            running_process = processes_ready_queue[0]
-            running_process.state = "running"
-            runOneTick(running_process)
+            running_process = processes_ready_queue[0]      # pega o primeiro processo da fila de prontos
+            running_process.state = "running"               # muda o seu estado para executando
+            runOneTick(running_process)                     # roda a rotina de execução do processo
     # time.sleep(0.5)
 
 for i in p:
     for j in range(len(i.starts)):
-        print("Processo " + str(i.pid) + " Começa " + str(i.starts[j]) + " Termina " + str(i.ends[j]))
+        print("Processo " + str(i.pid) + " Prioridade " + str(i.priority) + " Começa " + str(i.starts[j]) + " Termina " + str(i.ends[j]) + " Tempo de IO " + str(i.time_block))
