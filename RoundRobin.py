@@ -37,6 +37,7 @@ def runOneTick(running):        # função que executa uma unidade do quantum
             running.ends.append(tick+1)                 # marca o tempo de saída do processador
             running.io_events.pop(0)                    # remove o evento já executado
             running.state = "blocked"                   # muda seu status para bloqueado
+            running.block_starts.append(tick+1)
 
             return
         
@@ -66,8 +67,10 @@ def check(tick):
                 processes_ready_queue.append(processes_list[i])
             if len(processes_blocked_queue) > 0:                    # se houver algum processo na lista de bloqueados, verifica se já está no tempo de ele voltar para a fila de prontos
                 if tick - processes_blocked_queue[0].ends[len(processes_blocked_queue[0].ends) - 1] == QUANTUM:
+                    processes_blocked_queue[0].block_ends.append(tick)
                     processes_ready_queue.append(processes_blocked_queue[0])
                     processes_blocked_queue.pop(0)
+    
         return True
     else:
         global end_condition    # muda a variavel de condição quando não há mais nenhum processo a ser executado

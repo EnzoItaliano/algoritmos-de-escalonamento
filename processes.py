@@ -12,6 +12,8 @@ class BCP:                          # classe BCP, utilizado como se fosse uma st
         self.io_events = []             # chegada de momentos de E/S
         self.quantum = 0                # unidade de tempo dentro do processador
         self.time_block = 0;            # tempo bloqueado
+        self.block_starts = []          # momentos em que o processo é bloqueado      
+        self.block_ends = []            # momentos em que o processo é liberado da fila de bloqueados
         self.duration_prevision = []
 
 def BCPs(fp):                       # coloca os dados do txt de entrada em objetos 
