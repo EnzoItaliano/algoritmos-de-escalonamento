@@ -1,5 +1,6 @@
 import config
 import time
+import processes
 from random import randint
 
 processes_list = []     # lista que receberá todos o BCP dos processos 
