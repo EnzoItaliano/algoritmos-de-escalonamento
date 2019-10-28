@@ -5,6 +5,7 @@ import processes
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 p = processes.BCPs(open(sys.argv[1]))
 
@@ -16,8 +17,6 @@ tick = -1
 processes_ready_queue = []
 processes_blocked_queue = []
 processes_finished_queue = []
-
-# p.sort(key=lambda x: x.incoming, reverse=False)
 
 
 def runOneTick(running):
@@ -104,16 +103,40 @@ for i in p:
     print(i.time_block)
 
 
+pairs = []
+wait_time_plot = []
+labels = [""]
+
+
+# p.sort(key=lambda x: x.incoming, reverse=False)
+
+for i in p:
+    
+    temp = []
+    labels.append("Processo "+str(i.pid))
+
+    for j in range(len(i.starts)):
+        temp.append(i.ends[j] - i.starts[j])
+
+    pairs.append(list((zip(i.starts,temp))))
+    del temp[:]
+
+
+
 fig, ax = plt.subplots()
-ax.broken_barh([(110, 30), (150, 10)], (10, 9), facecolors='tab:blue')
-ax.broken_barh([(110, 10), (150, 5)], (10, 9), facecolors='tab:red')
-ax.broken_barh([(10, 50), (100, 20), (130, 10)], (20, 9),
-               facecolors=('tab:orange', 'tab:green', 'tab:red'))
-ax.set_ylim(5, 35)
-ax.set_xlim(0, 200)
-ax.set_xlabel('seconds since start')
-ax.set_yticks([15, 25])
-ax.set_yticklabels(['Bill', 'Jim'])
-ax.grid(True)
+for i in range(len(pairs)):
+    ax.broken_barh(pairs[i], ((i+1), 1), color=(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1)))
+
+
+
+ax.set_ylim(True)
+ax.set_xlim(True)
+ax.set_xlabel('Ciclos de CPU')
+# ax.set_ylabel('Processos')
+ax.set_yticklabels(labels) 
+ax.set_xticks(np.arange(0, tick+2, 1))
+ax.set_yticks(np.arange(0, len(p)+2, 1))
+
+ax.grid()
 
 plt.show()
