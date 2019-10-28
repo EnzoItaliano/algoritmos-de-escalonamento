@@ -31,11 +31,12 @@ def runOneTick(running):        # função que executa uma unidade do quantum
 
     if len(running.io_events) != 0:                     # caso o processo em execução tenha eventos E/S ele precisa verificar se está no tempo de fazê-lo
         if running.io_events[0] == running.cpu_use:     # utiliza o seu tempo de cpu para saber se é hora de sair para fazer E/S
+            running.io_events.pop(0)                    # remove o evento já executado
             processes_blocked_queue.append(running)     # adiciona-o na lista de bloqueados
             processes_ready_queue.pop(0)                # remove ele da fila de prontos
+
             running.quantum = 0                         # reseta seu quantum para zero
             running.ends.append(tick+1)                 # marca o tempo de saída do processador
-            running.io_events.pop(0)                    # remove o evento já executado
             running.state = "blocked"                   # muda seu status para bloqueado
 
             return
@@ -43,18 +44,18 @@ def runOneTick(running):        # função que executa uma unidade do quantum
     if running.duration == 0:                           # a duração é zero quando ele termina de executar completamente
         processes_finished_queue.append(running)        # adiciona-o na fila de terminados
         processes_ready_queue.pop(0)                    # remove-o da fila de prontos
+
         running.ends.append(tick+1)                     # marca o tempo de saída do processador
+        running.state = "finished"                      # muda o estado para finalizado
+
         global number_of_process
         number_of_process -= 1                          # diminui o numero de processos restantes
-        running.state = "finished"                      # muda o estado para finalizado
 
         return
         
     elif running.quantum == QUANTUM:                # se o processo já tiver utilizado dois quantuns do processador ele será removido
         processes_ready_queue.append(running)       # coloca-o no final da fila de prontos
-        processes_ready_queue.pop(0)                # remove-o do começo
-    
-    elif running.quantum == 2:                      
+        processes_ready_queue.pop(0)                # remove-o do começo                     
 
         running.ends.append(tick+1)                 # marca o tempo de término
         running.quantum = 0                         # reseta o quantum

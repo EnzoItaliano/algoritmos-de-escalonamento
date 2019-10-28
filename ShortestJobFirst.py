@@ -70,6 +70,7 @@ def check(tick):
             if tick == processes_list[i].incoming:                   # entra quando houver um processo para chegar a fila de prontos 
                 processes_list[i].duration_prevision.append(processes_list[i].duration)
                 processes_ready_queue.append(processes_list[i])      # adiciona o processo que chegou a fila de prontos
+
                 processes_ready_queue.sort(key=lambda x: x.duration_prevision[len(x.duration_prevision) - 1], reverse=False)     # organiza a fila de acordo com o menor tempo da previsão
 
 
@@ -86,7 +87,6 @@ def check(tick):
                     h -= 1                  # utilizado para manter na mesma posiçãp
                     control -= 1            # diminui a quantidade de elementos da fila pois foi removido
 
-                        
                     processes_ready_queue.sort(key=lambda x: x.duration_prevision[len(x.duration_prevision) - 1], reverse=False)     # organiza novamente a fila de prontos de acordo com o menor tempo da previsão
 
                 h += 1
