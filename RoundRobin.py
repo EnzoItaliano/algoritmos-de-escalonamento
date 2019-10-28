@@ -49,10 +49,12 @@ def runOneTick(running):        # função que executa uma unidade do quantum
         running.state = "finished"                      # muda o estado para finalizado
 
         return
-
-    elif running.quantum == 2:                      # se o processo já tiver utilizado dois quantuns do processador ele será removido
+        
+    elif running.quantum == QUANTUM:                # se o processo já tiver utilizado dois quantuns do processador ele será removido
         processes_ready_queue.append(running)       # coloca-o no final da fila de prontos
         processes_ready_queue.pop(0)                # remove-o do começo
+    
+    elif running.quantum == 2:                      
 
         running.ends.append(tick+1)                 # marca o tempo de término
         running.quantum = 0                         # reseta o quantum
@@ -64,10 +66,12 @@ def check(tick):
         for i in range(len(processes_list)):
             if tick == processes_list[i].incoming:                  # se houver algum processo com o tempo de chegada do tick atual
                 processes_ready_queue.append(processes_list[i])
-            if len(processes_blocked_queue) > 0:                    # se houver algum processo na lista de bloqueados, verifica se já está no tempo de ele voltar para a fila de prontos
-                if tick - processes_blocked_queue[0].ends[len(processes_blocked_queue[0].ends) - 1] == QUANTUM:
-                    processes_ready_queue.append(processes_blocked_queue[0])
-                    processes_blocked_queue.pop(0)
+                
+        if len(processes_blocked_queue) > 0:                        # se houver algum processo na lista de bloqueados, verifica se já está no tempo de ele voltar para a fila de prontos
+            if tick - processes_blocked_queue[0].ends[len(processes_blocked_queue[0].ends) - 1] == QUANTUM:
+                processes_ready_queue.append(processes_blocked_queue[0])
+                processes_blocked_queue.pop(0)
+                  
         return True
     else:
         global end_condition    # muda a variavel de condição quando não há mais nenhum processo a ser executado
@@ -88,8 +92,7 @@ def Run(processes):                             # função principal
                 running_process = processes_ready_queue[0]      # guarda o processo que será executado
                 running_process.state = "running"               # altera seu estado
                 runOneTick(running_process)                     # roda ele uma vez
-        # time.sleep(0.5)
 
-    for i in processes_list:
-        for j in range(len(i.starts)):
-            print("Processo " + str(i.pid) + " Começa " + str(i.starts[j]) + " Termina " + str(i.ends[j]))
+    # for i in processes_list:
+    #     for j in range(len(i.starts)):
+    #         print("Processo " + str(i.pid) + " Começa " + str(i.starts[j]) + " Termina " + str(i.ends[j]))
