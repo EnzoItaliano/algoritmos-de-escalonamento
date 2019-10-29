@@ -30,6 +30,7 @@ def printAnalysis(processes_list,tick,len_blocked_queue,len_ready_queueA,len_rea
     
     total_wait_time = 0
     response_time = []
+    turnarround_time = []
 
     print("-----------Dados-----------\n")
 
@@ -52,7 +53,8 @@ def printAnalysis(processes_list,tick,len_blocked_queue,len_ready_queueA,len_rea
             block_interval = i.block_ends[j] - i.block_starts[j]
             blocked_time += block_interval
         
-        response_time.append((i.wait_time + blocked_time + i.cpu_use)*CYCLE_TIME)               # guarda o temp total de execução, desde a solicitação até a resposta
+        turnarround_time.append((i.wait_time + blocked_time + i.cpu_use)*CYCLE_TIME)               # guarda o temp total de execução, desde a solicitação até a resposta
+        response_time.append((i.starts[0]-i.incoming)*CYCLE_TIME)
 
     print("----------Estatísticas--------\n")
     
@@ -78,11 +80,14 @@ def printAnalysis(processes_list,tick,len_blocked_queue,len_ready_queueA,len_rea
 
     processing_time = (tick+1)*CYCLE_TIME                                                       # tempo total de processamento do escalonamento
     troughput =  float( '%.2f' % ( (len(processes_list)/processing_time)*1000 ) )               # Troughput - número de processos executados por segundo
-    print(f"Throughput do sistema: {troughput} processos/seg\n")
+    print(f"Throughput do sistema: {troughput} processos/seg\n")   
+
+    mresponse = float( '%.2f' % ( (sum(response_time))/(len(processes_list))))
+    print(f"Tempo médio de resposta por processo: {mresponse}ms\n")
 
     j=0
-    for i in processes_list:
-        print(f"Tempo de resposta do processo {i.pid}: {response_time[j]}ms")           
+    for i in processes_list:          
+        print(f"Turnarround {i.pid}: {turnarround_time[j]}ms")           
         j+=1
 
 
