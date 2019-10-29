@@ -1,3 +1,23 @@
+"""*******************************************************************
+* NOME DO ARQUIVO :    StatisticalAnalysis.py                        *
+*                                                                    *
+* DESCRIÇÂO :                                                        *
+*                                                                    *
+*       Este programa consiste em receber os dados de cada           *
+*       processo, processá-los, e retornar suas análises             *
+*       estatísticas. Como também a plotagem de um diagrama          *
+*       de Grantt do escalonameto.                                   *
+*                                                                    *
+*                                                                    *
+*                                                                    *
+* AUTORES :    Matheus Batistela, Henrique Marcuzzo e Enzo Italiano  *
+*                                                                    *
+* DATA DE CRIAÇÃO :    18/10/2019                                    *   
+*                                                                    *
+* MODIFICAÇÕES :       28/10/2019                                    *
+*                                                                    * 
+**********************************************************************"""
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import Processes as pc
