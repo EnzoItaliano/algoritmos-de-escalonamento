@@ -1,3 +1,24 @@
+"""*******************************************************************
+* NOME DO ARQUIVO :    main.py                                       *
+*                                                                    *
+* DESCRIÇÂO :                                                        *
+*                                                                    *
+*        Este programa consiste em receber os dados de entrada       *
+*        pelo terminal e  fazer o intermédio carregando os           *
+*        processos, deixando-os prontos para ser executados          *
+*        por um método de escalonamento que será de acordo com       *
+*        o fornecido pelo usário na entrada.                         *       
+*                                                                    *
+*                                                                    *
+*                                                                    *
+* AUTORES :    Enzo Italiano, Henrique Marcuzzo e Matheus Batistela  *
+*                                                                    *
+* DATA DE CRIAÇÃO :    18/10/2019                                    *   
+*                                                                    *
+* MODIFICAÇÕES :       28/10/2019                                    *
+*                                                                    * 
+**********************************************************************"""
+
 import sys
 import Processes
 import RoundRobin

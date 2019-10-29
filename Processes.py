@@ -1,3 +1,23 @@
+"""*******************************************************************
+* NOME DO ARQUIVO :    Processes.py                                  *
+*                                                                    *
+* DESCRIÇÂO :                                                        *
+*                                                                    *
+*        Este programa consiste em receber os dados de cada          *
+*        processo, e armazena-los em suas estruturas definidas       *   
+*        para serem utilizados pela simulação de escolamento         *
+*        de processos.                                               *
+*                                                                    *
+*                                                                    *
+*                                                                    *
+* AUTORES :    Enzo Italiano, Henrique Marcuzzo e Matheus Batistela  *
+*                                                                    *
+* DATA DE CRIAÇÃO :    18/10/2019                                    *   
+*                                                                    *
+* MODIFICAÇÕES :       28/10/2019                                    *
+*                                                                    * 
+**********************************************************************"""
+
 class BCP:                              # classe BCP, utilizado como se fosse uma struct
     def __init__(self):
         self.pid = 0                    # PID do processo
