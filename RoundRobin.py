@@ -1,3 +1,25 @@
+"""*******************************************************************
+* NOME DO ARQUIVO :    RoundRobin.py                                 *
+*                                                                    *
+* DESCRIÇÂO :                                                        *
+*                                                                    *
+*        Este programa consiste em simular um processador            *
+*        em execução, utilizando o algoritimo de escalonamento       *
+*        de processos Round Robin com quantum fixo.                  *
+*        E também armazenar os dados para produção de estatíticas    *
+*        futuras.                                                    *
+*                                                                    *
+*                                                                    *
+*                                                                    *
+*                                                                    *
+* AUTORES :    Enzo Italiano, Henrique Marcuzzo e Matheus Batistela  *
+*                                                                    *
+* DATA DE CRIAÇÃO :    18/10/2019                                    *   
+*                                                                    *
+* MODIFICAÇÕES :       28/10/2019                                    *
+*                                                                    * 
+**********************************************************************"""
+
 import config
 import time
 import StatisticalAnalysis as sa

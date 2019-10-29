@@ -10,7 +10,7 @@
 *                                                                    *
 *                                                                    *
 *                                                                    *
-* AUTORES :    Matheus Batistela, Henrique Marcuzzo e Enzo Italiano  *
+* AUTORES :    Enzo Italiano, Henrique Marcuzzo e Matheus Batistela  *
 *                                                                    *
 * DATA DE CRIAÇÃO :    18/10/2019                                    *   
 *                                                                    *
