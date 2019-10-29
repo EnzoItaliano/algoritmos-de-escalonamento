@@ -32,10 +32,10 @@ Para alterar os processos basta abrir o inputProcesses.txt e mudar os números n
 * matplotlib - Biblioteca de plotagem de gráficos para Python
 
 Instalação:
-    ```
-    python3 -m pip install -U pip
-    python3 -m pip install -U matplotlib
-    ```
+```
+python3 -m pip install -U pip
+python3 -m pip install -U matplotlib
+```
 
 # Exemplo de uso
 
