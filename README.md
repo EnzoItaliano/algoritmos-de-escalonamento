@@ -30,7 +30,8 @@ Para alterar os processos basta abrir o inputProcesses.txt e mudar os números n
 * StatisticalAnalysis - essa biblioteca corresponde ao código StatisticalAnalysis.py que contém o código necessário para a plotagem do diagrama de Grantt e a exibição das estatísticas de escalonamento no terminal
 
 * matplotlib - Biblioteca de plotagem de gráficos para Python
-    Instalação:
+
+Instalação:
     ```
     python3 -m pip install -U pip
     python3 -m pip install -U matplotlib
