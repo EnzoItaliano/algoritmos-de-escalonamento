@@ -1,3 +1,5 @@
+<!-- Este projeto pode ser encontrado no GitHub atráves deste link: https://github.com/EnzoItaliano/algoritmos-de-escalonamento -->
+
 # Como compilar
 
 python3 main.py inputProcesses.txt tipo
