@@ -22,8 +22,7 @@ len_blocked_queue = []          # guarda os tamanhos da lista de bloqueados a ca
 
 def runOneTick(running, queue):                 # função que executa uma unidade de tempo
     
-    if running.quantum == 0:                    # o quantum é zero quando o processo entra no processador então marca o momento na lista de inicios
-        running.starts.append(tick)             # marca o momento que o processo começou uma execução
+    running.starts.append(tick)             # marca o momento que o processo começou uma execução
 
     for x in processes_ready_queueA:    
         if x.pid != running.pid:                # soma mais um no tempo de espera e aumenta a prioridade dinâmica de todos os processos na fila de prontos e que tem o estado "waiting" da fila A
@@ -86,18 +85,14 @@ def runOneTick(running, queue):                 # função que executa uma unida
 
         running.quantum = 0                                 # reseta seu quantum
 
-        running.ends.append(tick+1)                         # marca o tempo de saída do processador
-        running.state = "waiting"                           # volta o estado para esperando
-
-
     elif queue == 'B' and running.quantum == QUANTUM_B:
         processes_ready_queueB.append(running)              # o processo é adicionado à última posição na fila B por ser CPU-Bound
         processes_ready_queueB.pop(0)                       # é removido da primeira posição de B
 
         running.quantum = 0                                 # reseta seu quantum
 
-        running.ends.append(tick+1)                         # marca o tempo de saída do processador
-        running.state = "waiting"                           # volta o estado para esperando 
+    running.ends.append(tick+1)                         # marca o tempo de saída do processador
+    running.state = "waiting"                           # volta o estado para esperando 
             
 
 def check(tick):
@@ -151,12 +146,10 @@ def Run(processes):
         if check(tick):
             if len(processes_ready_queueA) > 0:                                                         # se houver processos na lista A entra aqui (lista A tem prioridade sobre a lista B)
                 if len(processes_ready_queueB) > 0 and processes_ready_queueB[0].quantum != 0:          # se um processo da lista B estava sendo executado, este é resetado
+                    processes_ready_queueB[0].quantum = 0                                               # reseta o quantum
+
                     processes_ready_queueA.append(processes_ready_queueB[0])                            # por terminar antes do tempo, é adicionado a lista A (processos que terminam antes do quantum)
                     processes_ready_queueB.pop(0)                                                       # remove o processo da lista B
-
-                    processes_ready_queueB[0].quantum = 0                                               # reseta o quantum
-                    processes_ready_queueB[0].ends.append(tick)                                         # marca o tempo de saída do processador
-                    processes_ready_queueB[0].state = "waiting"                                         # volta o estado para esperado
 
                 processes_ready_queueA.sort(key=lambda x: x.dynamic_priority, reverse=True)             # organiza novamente a fila de prontos de acordo com a prioridade dinâmica
                 running_process = processes_ready_queueA[0]                                             # pega o primeiro processo da fila de prontos
