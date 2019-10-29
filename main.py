@@ -1,10 +1,10 @@
 import sys
-import processes
+import Processes
 import RoundRobin
 import ShortestJobFirst
 import DinamicPriority
 
-processes_list = processes.BCPs(open(sys.argv[1]))
+processes_list = Processes.BCPs(open(sys.argv[1]))
 Type = sys.argv[2]
 switcher = {
     "RR": 1,

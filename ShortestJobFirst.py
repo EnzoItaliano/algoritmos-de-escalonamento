@@ -1,7 +1,7 @@
 import config
 import time
-import processes
 from random import randint
+import StatisticalAnalysis as sa
 
 processes_list = []     # lista que receberá todos o BCP dos processos 
 number_of_process = 0   # numero de processos total (passados no arquivo txt)
@@ -15,6 +15,9 @@ tick = -1                               # cada vez que um processo é executado 
 processes_ready_queue = []              # lista de processos prontos para executar (em espera)
 processes_blocked_queue = []            # lista de processos bloqueados
 processes_finished_queue = []           # lista de processos finalizados
+len_ready_queue = []                    # guarda os tamanhos da lista de prontos a cada ciclo 
+len_blocked_queue = []                  # guarda os tamanhos da lista de bloqueados a cada ciclo
+
 
 
 def runOneTick(running):                # função que executa uma unidade de tempo
@@ -41,6 +44,7 @@ def runOneTick(running):                # função que executa uma unidade de te
             running.ends.append(tick+1)                 # marca o tempo de saída do processador
             running.io_events.pop(0)                    # remove o I/O já executado
             running.state = "blocked"                   # muda seu status para bloqueado
+            running.block_starts.append(tick+1)         # marca o tempo de entrada na fila de bloqueados
 
             return
         
@@ -82,7 +86,8 @@ def check(tick):
 
                 if tick - processes_blocked_queue[h].ends[len(processes_blocked_queue[h].ends) - 1] == processes_blocked_queue[h].time_block:      # entra quando estiver no momento de algum processo bloquado sair de I/O
                     processes_ready_queue.append(processes_blocked_queue[h])                     # adiciona-o novamente a fila de prontos
-                    processes_blocked_queue.pop(h)                      # remove-o da fila de bloquados
+                    processes_blocked_queue[h].block_ends.append(tick)                           # marca o tempo de saída da fila de bloqueados
+                    processes_blocked_queue.pop(h)                                               # remove-o da fila de bloquados
                     
                     h -= 1                  # utilizado para manter na mesma posiçãp
                     control -= 1            # diminui a quantidade de elementos da fila pois foi removido
@@ -110,12 +115,13 @@ def Run(processes):
     while not end_condition:
         global tick
         tick += 1
+        len_ready_queue.append(len(processes_ready_queue))      # guarda o tamanho atual da fila de prontos
+        len_blocked_queue.append(len(processes_blocked_queue))  # guarda o tamanho atual da fila de bloqueados
         if check(tick):
             if len(processes_ready_queue) > 0:
                 running_process = processes_ready_queue[0]      # pega o primeiro processo da fila de prontos
                 running_process.state = "running"               # muda o seu estado para executando
                 runOneTick(running_process)                     # roda a rotina de execução do processo
 
-    # for i in processes_list:
-    #     for j in range(len(i.starts)):
-    #         print("Processo " + str(i.pid) + " Prioridade " + str(i.priority) + " Começa " + str(i.starts[j]) + " Termina " + str(i.ends[j]) + " Tempo de IO " + str(i.time_block))
+    sa.printAnalysis(processes_list,tick,len_blocked_queue,len_ready_queue)
+    sa.plot(processes_list,tick)

@@ -1,5 +1,6 @@
 import config
 import time
+import StatisticalAnalysis as sa
 
 processes_list = []     # lista que receberá todos o BCP dos processos 
 number_of_process = 0   # numero de processos total (passados no arquivo txt)
@@ -10,6 +11,8 @@ tick = -1                       # cada vez que um processo é executado uma unid
 processes_ready_queue = []      # lista de processos prontos para executar (em espera)
 processes_blocked_queue = []    # lista de processos bloqueados
 processes_finished_queue = []   # lista de processos finalizados
+len_ready_queue = []            # guarda os tamanhos da lista de prontos a cada ciclo 
+len_blocked_queue = []          # guarda os tamanhos da lista de bloqueados a cada ciclo
 
 # p.sort(key=lambda x: x.incoming, reverse=False)
 
@@ -38,6 +41,8 @@ def runOneTick(running):        # função que executa uma unidade do quantum
             running.quantum = 0                         # reseta seu quantum para zero
             running.ends.append(tick+1)                 # marca o tempo de saída do processador
             running.state = "blocked"                   # muda seu status para bloqueado
+            running.block_starts.append(tick+1)         # marca o tempo de entrada na fila de bloqueados
+
 
             return
         
@@ -70,6 +75,7 @@ def check(tick):
                 
         if len(processes_blocked_queue) > 0:                        # se houver algum processo na lista de bloqueados, verifica se já está no tempo de ele voltar para a fila de prontos
             if tick - processes_blocked_queue[0].ends[len(processes_blocked_queue[0].ends) - 1] == QUANTUM:
+                processes_blocked_queue[0].block_ends.append(tick)  # marca o tempo de saída da fila de bloqueados
                 processes_ready_queue.append(processes_blocked_queue[0])
                 processes_blocked_queue.pop(0)
                   
@@ -88,11 +94,16 @@ def Run(processes):                             # função principal
     while not end_condition:
         global tick
         tick += 1                                               # incrementa o tick que corresponde a quantidade de vezes que o processador rodou
+        len_ready_queue.append(len(processes_ready_queue))      # guarda o tamanho atual da fila de prontos
+        len_blocked_queue.append(len(processes_blocked_queue))  # guarda o tamanho atual da fila de bloqueados
         if check(tick):                                         # função que verifica se existem processos a serem executados
             if len(processes_ready_queue) > 0:                  # verifica se há algum processo na fila de prontos
                 running_process = processes_ready_queue[0]      # guarda o processo que será executado
                 running_process.state = "running"               # altera seu estado
                 runOneTick(running_process)                     # roda ele uma vez
+
+    sa.printAnalysis(processes_list,tick,len_blocked_queue,len_ready_queue)
+    sa.plot(processes_list,tick)
 
     # for i in processes_list:
     #     for j in range(len(i.starts)):

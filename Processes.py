@@ -13,7 +13,10 @@ class BCP:                              # classe BCP, utilizado como se fosse um
         self.duration_prevision = []    # previsão de duração do processo
         self.io_events = []             # chegada de momentos de E/S
         self.quantum = 0                # unidade de tempo dentro do processador
+        self.block_starts = []          # momentos em que o processo entra na fila de bloqueados
+        self.block_ends = []            # momentos em que o processo é liberado da fila de bloqueados
         self.time_block = 0;            # tempo bloqueado
+
 
 def BCPs(fp):                           # coloca os dados do txt de entrada em objetos 
     process = []
@@ -36,9 +39,5 @@ def BCPs(fp):                           # coloca os dados do txt de entrada em o
 
 def printProcess(process):
     print("PID: " + str(process.pid))
-    print("Duração: " + str(process.duration))
     print("Prioridade: " + str(process.priority))
     print("Chegada: " + str(process.incoming))
-    for j in range(len(process.io_events)):
-        print("Eventos: "+str(process.io_events[j]))
-
